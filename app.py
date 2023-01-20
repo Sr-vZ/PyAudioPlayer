@@ -9,8 +9,13 @@ from rich.live import Live
 from rich.spinner import Spinner, SPINNERS
 from rich.columns import Columns
 from rich.text import Text
-from rich.progress import Progress
-from rich.progress import track
+
+# from rich.progress import Progress
+# from rich.progress import track
+
+import random
+
+# import FFT
 
 all_spinners = Columns(
     [
@@ -23,13 +28,6 @@ all_spinners = Columns(
 
 player = mixer
 default_config = {"graph_width": 70, "panel_border": "#d600ff"}
-
-cd_frame1 = [
-    "             ⢀⣀⣠⣤⣤⣤⣤⣄⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n    ⠀⠀⠀⠀⠀⠀⣠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⢀⠀⠀⠀⠀⠀⠀\n    ⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⣠⣿⣿⣦⡀⠀⠀⠀\n    ⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁⠀⣴⣿⣿⣿⣿⣿⣄⠀⠀\n    ⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⢿⠃⢀⣾⣿⣿⣿⣿⣿⣿⣿⣆⠀\n    ⢰⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⣡⣤⣶⣶⣤⣄⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⡆\n    ⣾⣿⣿⣿⣿⣿⣿⣿⡿⠀⣾⣿⠟⠉⠉⠻⣿⣷⠀⢿⣿⣿⣿⣿⣿⣿⣿⣷\n    ⣿⣿⣿⣿⣿⣿⣿⣿⡇⢸⣿⡇⠀⠀⠀⠀⢸⣿⡇⢸⣿⣿⣿⣿⣿⣿⣿⣿\n    ⠿⠿⠟⠛⠛⢉⣉⣡⡤⠀⢿⣿⣤⣀⣀⣤⣿⡿⠀⣾⣿⣿⣿⣿⣿⣿⣿⡿\n    ⠀⣤⣴⣶⡿⠟⢋⣡⣶⣶⣄⠙⠛⠿⠿⠛⠋⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⠇\n    ⠀⠙⠋⢁⣠⣶⣿⣿⣿⣿⣿⣿⣷⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀\n    ⠀⠀⠰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀\n    ⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀\n    ⠀⠀⠀⠀⠀⠈⠙⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠋⠁⠀⠀⠀⠀⠀\n    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠙⠛⠛⠛⠛⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀\n"
-]
-cd_frame2 = [
-    "              ⡀⣀⣄⣤⣤⣤⣤⣠⣀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n    ⠀⠀⠀⠀⠀⠀⢀⠀⠀⠃⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣴⣠⠀⠀⠀⠀⠀⠀\n    ⠀⠀⠀⡀⣦⣿⣿⣠⠀⠀⡏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣴⢀⠀⠀⠀\n    ⠀⠀⣄⣿⣿⣿⣿⣿⣴⠀⠁⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣠⠀⠀\n    ⠀⣆⣿⣿⣿⣿⣿⣿⣿⣾⢀⠃⢿⠿⠿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣰⠀\n    ⡆⣿⣿⣿⣿⣿⣿⣿⣿⢿⠘⣄⣤⣶⣶⣤⣡⠋⡿⣿⣿⣿⣿⣿⣿⣿⣿⢰\n    ⣷⣿⣿⣿⣿⣿⣿⣿⢿⠀⣷⣿⠻⠉⠉⠟⣿⣾⠀⡿⣿⣿⣿⣿⣿⣿⣿⣾\n    ⣿⣿⣿⣿⣿⣿⣿⣿⢸⡇⣿⢸⠀⠀⠀⠀⡇⣿⢸⡇⣿⣿⣿⣿⣿⣿⣿⣿\n    ⡿⣿⣿⣿⣿⣿⣿⣿⣾⠀⡿⣿⣤⣀⣀⣤⣿⢿⠀⡤⣡⣉⢉⠛⠛⠟⠿⠿\n    ⠇⣿⣿⣿⣿⣿⣿⣿⣿⣾⣠⠋⠛⠿⠿⠛⠙⣄⣶⣶⣡⢋⠟⡿⣶⣴⣤⠀\n    ⠀⠏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣶⣶⣷⣿⣿⣿⣿⣿⣿⣶⣠⢁⠋⠙⠀\n    ⠀⠀⠏⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠰⠀⠀\n    ⠀⠀⠀⠁⠟⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠻⠈⠀⠀⠀\n    ⠀⠀⠀⠀⠀⠁⠋⠟⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⠻⠙⠈⠀⠀⠀⠀⠀\n    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠉⠛⠛⠛⠛⠛⠙⠉⠈⠀⠀         \n"
-]
 
 frame1 = [
     ".:^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^:.    ",
@@ -190,20 +188,7 @@ def disk_animate(layout, state):
                     border_style=default_config["panel_border"],
                 )
             )
-            time.sleep(1)
-        # layout["disk"].update(
-        #     Panel.fit(
-        #         Align.center(*frame2, vertical="middle"),
-        #         border_style=default_config["panel_border"],
-        #     )
-        # )
-        # time.sleep(0.3)
-        # layout["disk"].update(
-        #     Panel.fit(
-        #         Align.center(*cd_frame2, vertical="middle"),
-        #         border_style=default_config["panel_border"],
-        #     )
-        # )
+            time.sleep(0.2)
     else:
         layout["disk"].update(
             Panel(
@@ -226,7 +211,7 @@ def draw_ui(layout):
 
     layout["header"].update(
         Panel(
-            Align.center("[bold][yellow]Python CLI Audio Player[/yellow][/bold]"),
+            Align.center("[bold][yellow] ♪ Python CLI Audio Player[/yellow][/bold]"),
             border_style=default_config["panel_border"],
         )
     )
@@ -243,7 +228,7 @@ def draw_ui(layout):
 
     layout["player"].split_column(
         Layout(name="song_name", size=3),
-        Layout(name="spectro", size=3),
+        Layout(name="spectro", size=15),
         Layout(name="media_buttons", size=3),
         Layout(name="seek_bar", size=3),
     )
@@ -261,8 +246,37 @@ def draw_ui(layout):
 
 
 def time_format(seconds):
+    # to convert int seconds to mm:ss format
     minutes = seconds // 60
     return "%02d:%02d" % (minutes, seconds % 60)
+
+
+def spectrogram(sz):
+    # ch = "█"
+    ch = "▒"
+    if len(sz) == 0:
+        return ""
+    sz = np.abs(np.int_(sz))
+    mn, mx = min(sz), max(sz)
+    df = (mx - mn) // 8
+    # print(df)
+    bkt = [(el - mn) // df for el in sz]
+    # print(bkt)
+    hrz = [f"{b}{c}" for b, c in [(ch * (el + 1), " " * (8 - el)) for el in bkt]]
+
+    # hrz = [f"{b}{c}" for b, c in [(ch * (el + 1), " " * (8 - el)) for el in bkt]]
+    return "\n".join([" ".join(el) for el in list(map(list, zip(*hrz)))[::-1]])
+
+
+from scipy.io.wavfile import read
+import numpy as np
+
+
+sampleRate, audioBuffer = read("./temp.wav")
+duration = len(audioBuffer) / sampleRate
+time_w = np.arange(0, duration, 1 / sampleRate)  # time vector
+
+audioBuffer = audioBuffer.sum(axis=1) / 2
 
 
 def main():
@@ -274,7 +288,7 @@ def main():
 
     # Loading the song
     song_file = "./sample-music/my-lofi-morning-music-ig-version-60s-9651.mp3"
-    player.music.load(song_file)
+    s = player.music.load(song_file)
     song_meta = MP3(song_file)
     song_length = song_meta.info.length
     # Setting the volume
@@ -284,7 +298,7 @@ def main():
     player.music.play()
     # infinite loop
     user_controls()
-
+    print(song_meta)
     # with Progress() as progress:
     #     # seek_bar = Progress()
     #     # seek_bar_task = seek_bar.add_task("song", total=int(song_length))
@@ -298,7 +312,7 @@ def main():
     #     # )
     # )
     # layout["seek_bar"].update(Panel.fit(str(player.music.get_pos())))
-    with Live(layout, refresh_per_second=4, screen=True) as live:
+    with Live(layout, refresh_per_second=25, screen=True) as live:
         while True:
             # layout["disk"].update(Panel("test " + str(frame)))
             # layout["disk"].update(disk_animate(layout, "playing"))
@@ -316,6 +330,22 @@ def main():
                 "[green]━" * int(seek_percent)
                 + "[white]|"
                 + "[red]━" * (100 - int(seek_percent))
+            )
+            amp = []
+            curr_ms = int(player.music.get_pos() * sampleRate / 1000)
+            # amp = audioBuffer[-100 : curr_pos * sampleRate]
+            # amp = amp[-25::]
+            # for i in range(curr_ms, -100):
+            # amp.append(audioBuffer[i])
+            amp.append(audioBuffer[curr_ms])
+            amp = [random.randint(10, 99) for _ in range(25)]
+            amp = audioBuffer[curr_ms : curr_ms + 100 : 5]
+            layout["spectro"].update(Panel(spectrogram(amp)))
+
+            layout["media_buttons"].update(
+                Panel(
+                    f"{str(player.music.get_pos())}  {str(audioBuffer[curr_ms])} {str(time_w[curr_ms])}"
+                )
             )
 
             layout["seek_bar"].update(
