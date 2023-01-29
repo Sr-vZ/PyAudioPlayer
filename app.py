@@ -302,10 +302,8 @@ def main():
     player.init()
 
     # Loading the song
-    # music_list = []
     for file in os.listdir(default_config["music_file_location"]):
         if file.endswith(".mp3"):
-            # print(os.path.join("/mydir", file))
             music_list.append(os.path.join(default_config["music_file_location"], file))
     # currently_playing = "./sample-music/my-lofi-morning-music-ig-version-60s-9651.mp3"
     currently_playing = music_list[0]
